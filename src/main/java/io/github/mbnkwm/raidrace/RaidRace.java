@@ -51,7 +51,7 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
 
     private Path dataPath;
     private long lastClosedAt = -1;
-    private int lastContainerId = -1;
+    private int currentRewardContainerId = -1;
     private int lastMatchedAspectPulls = -1;
     private int lastMatchedRewardPulls = -1;
     private int sessionPulls;
@@ -78,9 +78,11 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
 
     @Override
     public void onContainerClosed(int containerId) {
-        if (containerId == lastContainerId) {
+        if (containerId == currentRewardContainerId) {
             lastClosedAt = System.currentTimeMillis();
         }
+
+        currentRewardContainerId = -1;
     }
 
     @Override
@@ -91,7 +93,7 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
             long timestamp = System.currentTimeMillis();
 
             // we only want the initial contents, not every update when players move items around
-            if (menu.containerId == lastContainerId) {
+            if (menu.containerId == currentRewardContainerId) {
                 return;
             }
 
@@ -100,7 +102,7 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
                 LOGGER.warn("Raid rewards reopened too quickly ({}ms) after previous one closing, skipping.",
                         timestamp - lastClosedAt);
 
-                lastContainerId = menu.containerId;
+                currentRewardContainerId = menu.containerId;
 
                 return;
             }
@@ -115,7 +117,7 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
                 return;
             }
 
-            lastContainerId = menu.containerId;
+            currentRewardContainerId = menu.containerId;
 
             StringBuilder builder = new StringBuilder();
 
