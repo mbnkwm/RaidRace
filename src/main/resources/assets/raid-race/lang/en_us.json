@@ -1,0 +1,11 @@
+{
+  "text.raid-race.error.read": "Couldn't read the pull data file!",
+  "text.raid-race.error.write": "Couldn't write reward pulls to the data file, please report this with the error logs!",
+  "text.raid-race.error.unmatched-chest": "Couldn't match a raid to your location, please report this as it won't log these rewards!",
+
+  "text.raid-race.help.pulls": "Displays how many reward pulls you've logged, both for this session and overall.",
+  "text.raid-race.help.file": "Open the folder where the reward data is stored",
+
+  "text.raid-race.pulls-progress": "You've logged %1$s pulls (%2$s this session)",
+  "text.raid-race.pulls-logged": "Logged %1$s new reward pulls (%2$s this session)"
+}

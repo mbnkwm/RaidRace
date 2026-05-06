@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "raid-race",
+  "version": "${version}",
+  "name": "Raid Race",
+  "description": "battery locked me in the basement please help all i hear are umamusume voicelines from upstairs",
+  "authors": [
+    "NHK"
+  ],
+  "contact": {
+    "sources": "https://github.com/mbnkwm/raid-race",
+    "issues": "https://github.com/mbnkwm/raid-race/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/raid-race/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "io.github.mbnkwm.raidrace.RaidRace"
+    ]
+  },
+  "mixins": [
+    "raid-race.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
