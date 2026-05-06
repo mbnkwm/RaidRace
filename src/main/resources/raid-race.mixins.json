@@ -6,8 +6,8 @@
   "mixins": [
   ],
   "client": [
-    "AbstractContainerScreenMixin",
-    "ClientPacketListenerMixin"
+    "ClientPacketListenerMixin",
+    "LocalPlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
