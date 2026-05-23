@@ -82,6 +82,7 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
                         .then(ClientCommandManager.literal("pulls").executes(this::pullsCommand))
                         .then(ClientCommandManager.literal("file").executes(this::fileCommand))
                         .then(ClientCommandManager.literal("silent").executes(this::silentCommand))
+                        .then(ClientCommandManager.literal("help").executes(this::helpCommand))
                         .executes(this::helpCommand)));
     }
 
