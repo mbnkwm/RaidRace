@@ -27,6 +27,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEvent,
         ContainerEvents.SetContentEvent, ClientReceiveMessageEvents.Game {
@@ -49,6 +50,8 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
     );
     private static final double CHEST_RANGE = 50;
 
+    private Properties config;
+    private Path configPath;
     private Path dataPath;
     private long lastClosedAt = -1;
     private int currentRewardContainerId = -1;
@@ -58,9 +61,14 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
 
     @Override
     public void onInitializeClient() {
+        config = new Properties();
         dataPath = FabricLoader.getInstance().getGameDir().resolve("wynn-analytics").resolve("raid-race.csv");
+        configPath = FabricLoader.getInstance().getConfigDir().resolve("raid-race.properties");
+
+        config.setProperty("silent", "false");
 
         try {
+            loadConfig();
             setupDataFile();
         } catch (IOException e) {
             LOGGER.error("Could not create the storage file for the raid race data!", e);
@@ -73,6 +81,7 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
                 ClientCommandManager.literal("raidrace")
                         .then(ClientCommandManager.literal("pulls").executes(this::pullsCommand))
                         .then(ClientCommandManager.literal("file").executes(this::fileCommand))
+                        .then(ClientCommandManager.literal("silent").executes(this::silentCommand))
                         .executes(this::helpCommand)));
     }
 
@@ -163,8 +172,10 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
 
                 LOGGER.info("Saved raid reward data to file at: {}", dataPath.toAbsolutePath());
 
-                mc.player.displayClientMessage(Component.translatable("text.raid-race.pulls-logged",
-                        lastMatchedRewardPulls, sessionPulls), false);
+                if (!Boolean.parseBoolean(config.getProperty("silent"))) {
+                    mc.player.displayClientMessage(Component.translatable("text.raid-race.pulls-logged",
+                            lastMatchedRewardPulls, sessionPulls), false);
+                }
             } catch (IOException e) {
                 LOGGER.error("Could not write raid reward data to file!", e);
 
@@ -205,6 +216,10 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
                 .append(Component.literal("file").withStyle(Style.EMPTY.withUnderlined(true)
                         .withClickEvent(new ClickEvent.SuggestCommand("/raidrace file"))
                         .withHoverEvent(new HoverEvent.ShowText(Component.translatable("text.raid-race.help.file")))))
+                .append(Component.literal(" | "))
+                .append(Component.literal("silent").withStyle(Style.EMPTY.withUnderlined(true)
+                        .withClickEvent(new ClickEvent.SuggestCommand("/raidrace silent"))
+                        .withHoverEvent(new HoverEvent.ShowText(Component.translatable("text.raid-race.help.silent")))))
                 .append(">"));
 
         return 1;
@@ -226,6 +241,22 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
         }
 
         context.getSource().sendFeedback(Component.translatable("text.raid-race.pulls-progress", total, sessionPulls));
+
+        return 1;
+    }
+
+    private int silentCommand(CommandContext<FabricClientCommandSource> context) {
+        boolean isSilent = Boolean.parseBoolean(config.getProperty("silent"));
+
+        config.setProperty("silent", Boolean.toString(!isSilent));
+
+        context.getSource().sendFeedback(Component.translatable("text.raid-race.silent.%s".formatted(isSilent ? "off" : "on")));
+
+        try {
+            config.store(Files.newBufferedWriter(configPath), null);
+        } catch (IOException e) {
+            LOGGER.error("Couldn't save the config!");
+        }
 
         return 1;
     }
@@ -282,6 +313,18 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
 
             Files.writeString(dataPath, header.toString());
         }
+    }
+
+    private void loadConfig() throws IOException {
+        if (Files.notExists(configPath)) {
+            Files.createFile(configPath);
+
+            config.store(Files.newBufferedWriter(configPath), null);
+
+            return;
+        }
+
+        config.load(Files.newBufferedReader(configPath));
     }
 
     private Optional<String> matchRaid(BlockPos playerPosition) {
