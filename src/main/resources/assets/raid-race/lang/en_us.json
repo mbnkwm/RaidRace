@@ -6,9 +6,13 @@
   "text.raid-race.help.pulls": "Displays how many reward pulls you've logged, both for this session and overall.",
   "text.raid-race.help.file": "Open the folder where the reward data is stored",
   "text.raid-race.help.silent": "Hides the message that displays after opening a reward chest.",
+  "text.raid-race.help.time": "Tells you how much time is left for the event.",
 
   "text.raid-race.pulls-progress": "You've logged %1$s pulls (%2$s this session)",
   "text.raid-race.pulls-logged": "Logged %1$s new reward pulls (%2$s this session)",
   "text.raid-race.silent.off": "You will see the message after opening a reward chest again.",
-  "text.raid-race.silent.on": "You will no longer see the message after opening a reward chest."
+  "text.raid-race.silent.on": "You will no longer see the message after opening a reward chest.",
+  "text.raid-race.time.until": "The event starts in %1$sd %2$sh %3$sm!",
+  "text.raid-race.time.remaining": "The event ends in %1$sd %2$sh %3$sm!",
+  "text.raid-race.time.ended": "The event has ended, thank you for participating!"
 }

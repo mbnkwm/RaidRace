@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,6 +51,9 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
             "The Wartorn Palace", new BlockPos(-19066, 125, -1821)
     );
     private static final double CHEST_RANGE = 50;
+
+    private static final Instant EVENT_START = Instant.ofEpochSecond(1781283600);
+    private static final Instant EVENT_END = Instant.ofEpochSecond(1782493199);
 
     private Properties config;
     private Path configPath;
@@ -82,6 +87,7 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
                         .then(ClientCommandManager.literal("pulls").executes(this::pullsCommand))
                         .then(ClientCommandManager.literal("file").executes(this::fileCommand))
                         .then(ClientCommandManager.literal("silent").executes(this::silentCommand))
+                        .then(ClientCommandManager.literal("time").executes(this::timeCommand))
                         .then(ClientCommandManager.literal("help").executes(this::helpCommand))
                         .executes(this::helpCommand)));
     }
@@ -221,6 +227,10 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
                 .append(Component.literal("silent").withStyle(Style.EMPTY.withUnderlined(true)
                         .withClickEvent(new ClickEvent.SuggestCommand("/raidrace silent"))
                         .withHoverEvent(new HoverEvent.ShowText(Component.translatable("text.raid-race.help.silent")))))
+                .append(Component.literal(" | "))
+                .append(Component.literal("time").withStyle(Style.EMPTY.withUnderlined(true)
+                        .withClickEvent(new ClickEvent.SuggestCommand("/raidrace time"))
+                        .withHoverEvent(new HoverEvent.ShowText(Component.translatable("text.raid-race.help.time")))))
                 .append(">"));
 
         return 1;
@@ -257,6 +267,24 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
             config.store(Files.newBufferedWriter(configPath), null);
         } catch (IOException e) {
             LOGGER.error("Couldn't save the config!");
+        }
+
+        return 1;
+    }
+
+    private int timeCommand(CommandContext<FabricClientCommandSource> context) {
+        Instant now = Instant.now();
+
+        if (now.isBefore(EVENT_START)) {
+            Duration untilStart = Duration.between(now, EVENT_START);
+
+            context.getSource().sendFeedback(Component.translatable("text.raid-race.time.until", untilStart.toDays(), untilStart.toHoursPart(), untilStart.toMinutesPart()));
+        } else if (now.isAfter(EVENT_END)) {
+            context.getSource().sendFeedback(Component.translatable("text.raid-race.time.ended"));
+        } else {
+            Duration remaining = Duration.between(now, EVENT_END);
+
+            context.getSource().sendFeedback(Component.translatable("text.raid-race.time.remaining", remaining.toDays(), remaining.toHoursPart(), remaining.toMinutesPart()));
         }
 
         return 1;
