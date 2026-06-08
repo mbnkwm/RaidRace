@@ -14,5 +14,5 @@
   "text.raid-race.silent.on": "You will no longer see the message after opening a reward chest.",
   "text.raid-race.time.until": "The event starts in %1$sd %2$sh %3$sm!",
   "text.raid-race.time.remaining": "The event ends in %1$sd %2$sh %3$sm!",
-  "text.raid-race.time.ended": "The event has ended, thank you for participating!"
+  "text.raid-race.time.ended": "The event has ended, thank you for participating! Check %1$s for information on how to submit your data!"
 }

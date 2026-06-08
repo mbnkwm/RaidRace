@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -280,7 +281,9 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
 
             context.getSource().sendFeedback(Component.translatable("text.raid-race.time.until", untilStart.toDays(), untilStart.toHoursPart(), untilStart.toMinutesPart()));
         } else if (now.isAfter(EVENT_END)) {
-            context.getSource().sendFeedback(Component.translatable("text.raid-race.time.ended"));
+            context.getSource().sendFeedback(Component.translatable("text.raid-race.time.ended",
+                    Component.literal("#event-info").setStyle(Style.EMPTY.withUnderlined(true)
+                            .withClickEvent(new ClickEvent.OpenUrl(URI.create("https://discord.com/channels/1351230490681671701/1450935762035019796"))))));
         } else {
             Duration remaining = Duration.between(now, EVENT_END);
 
