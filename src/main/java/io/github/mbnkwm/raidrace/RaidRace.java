@@ -302,8 +302,20 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
 
             lines = lines.subList(1, lines.size());
 
+            boolean hasEventStarted = Instant.now().isAfter(EVENT_START);
+
             return lines.stream()
-                    .map(s -> s.split(",")[4])
+                    .map(s -> s.split(","))
+                    .filter(s -> {
+                        if (!hasEventStarted) {
+                            return true;
+                        }
+
+                        long timestamp = Long.parseLong(s[1]);
+
+                        return timestamp >= EVENT_START.toEpochMilli() && timestamp < EVENT_END.toEpochMilli();
+                    })
+                    .map(s -> s[4])
                     .mapToInt(Integer::parseInt)
                     .sum();
         } catch (IOException e) {
