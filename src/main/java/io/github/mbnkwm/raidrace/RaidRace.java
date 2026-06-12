@@ -205,11 +205,16 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
             Component last = message.getSiblings().getLast();
 
             if (!last.getSiblings().isEmpty()
-                    && last.getSiblings().getFirst().getContents() instanceof PlainTextContents contents) {
-                if (joined.endsWith("Reward Pulls")) {
-                    lastMatchedRewardPulls = Integer.parseInt(contents.text());
-                } else if (joined.endsWith("Aspect Pulls")) {
-                    lastMatchedAspectPulls = Integer.parseInt(contents.text());
+                    && last.getSiblings().getFirst().getContents() instanceof PlainTextContents contents
+                    && contents != PlainTextContents.EMPTY) {
+                try {
+                    if (joined.endsWith("Reward Pulls")) {
+                        lastMatchedRewardPulls = Integer.parseInt(contents.text());
+                    } else if (joined.endsWith("Aspect Pulls")) {
+                        lastMatchedAspectPulls = Integer.parseInt(contents.text());
+                    }
+                } catch (NumberFormatException e) {
+                    LOGGER.warn("Failed to parse pulls number \"{}\", this is probably fine unless you're seeing this after a raid", contents.text());
                 }
             }
         }
