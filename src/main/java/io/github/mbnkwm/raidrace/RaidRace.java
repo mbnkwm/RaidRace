@@ -2,11 +2,11 @@ package io.github.mbnkwm.raidrace;
 
 import io.github.mbnkwm.raidrace.event.ContainerEvents;
 import com.mojang.brigadier.context.CommandContext;
+import io.github.mbnkwm.raidrace.event.SystemMessageEvent;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -33,7 +33,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEvent,
-        ContainerEvents.SetContentEvent, ClientReceiveMessageEvents.Game {
+        ContainerEvents.SetContentEvent, SystemMessageEvent {
     public static final Logger LOGGER = LoggerFactory.getLogger(RaidRace.class);
 
     private static final String REWARD_CONTAINER_TITLE = "󏿪";
@@ -82,7 +82,7 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
 
         ContainerEvents.CLOSE.register(this);
         ContainerEvents.SET_CONTENT.register(this);
-        ClientReceiveMessageEvents.GAME.register(this);
+        SystemMessageEvent.RECEIVED.register(this);
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcher.register(
                 ClientCommandManager.literal("raidrace")
                         .then(ClientCommandManager.literal("pulls").executes(this::pullsCommand))
@@ -194,7 +194,7 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
     }
 
     @Override
-    public void onReceiveGameMessage(@NonNull Component message, boolean overlay) {
+    public void onMessageReceived(Component message, boolean overlay) {
         if (overlay) {
             return;
         }
