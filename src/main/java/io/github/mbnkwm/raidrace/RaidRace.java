@@ -55,7 +55,7 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
 
     private static final Instant EVENT_START = Instant.ofEpochSecond(1781283600);
     private static final Instant EVENT_PAUSE = Instant.ofEpochMilli(1781295899458L);
-    private static final Instant EVENT_UNPAUSE = Instant.ofEpochSecond(1783710000);
+    private static final Instant EVENT_UNPAUSE = Instant.ofEpochSecond(1783715400);
     private static final Instant EVENT_END = Instant.ofEpochSecond(1784912400);
 
     private Properties config;
