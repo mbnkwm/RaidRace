@@ -54,7 +54,9 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
     private static final double CHEST_RANGE = 50;
 
     private static final Instant EVENT_START = Instant.ofEpochSecond(1781283600);
-    private static final Instant EVENT_END = Instant.ofEpochSecond(1782493199);
+    private static final Instant EVENT_PAUSE = Instant.ofEpochMilli(1781295899458L);
+    private static final Instant EVENT_UNPAUSE = Instant.ofEpochSecond(1783706400);
+    private static final Instant EVENT_END = Instant.ofEpochSecond(1784912400);
 
     private Properties config;
     private Path configPath;
@@ -289,6 +291,10 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
             context.getSource().sendFeedback(Component.translatable("text.raid-race.time.ended",
                     Component.literal("#event-info").setStyle(Style.EMPTY.withUnderlined(true)
                             .withClickEvent(new ClickEvent.OpenUrl(URI.create("https://discord.com/channels/1351230490681671701/1450935762035019796"))))));
+        } else if (now.isAfter(EVENT_PAUSE) && now.isBefore(EVENT_UNPAUSE)) {
+            var remaining = Duration.between(now, EVENT_UNPAUSE);
+
+            context.getSource().sendFeedback(Component.translatable("text.raid-race.time.paused", remaining.toHours(), remaining.toMinutesPart(), remaining.toSecondsPart()));
         } else {
             Duration remaining = Duration.between(now, EVENT_END);
 
@@ -321,7 +327,8 @@ public class RaidRace implements ClientModInitializer, ContainerEvents.CloseEven
 
                         long timestamp = Long.parseLong(s[1]);
 
-                        return timestamp >= EVENT_START.toEpochMilli() && timestamp < EVENT_END.toEpochMilli();
+                        return timestamp >= EVENT_START.toEpochMilli() && timestamp < EVENT_END.toEpochMilli()
+                                && (timestamp >= EVENT_UNPAUSE.toEpochMilli() || timestamp < EVENT_PAUSE.toEpochMilli());
                     })
                     .map(s -> s[4])
                     .mapToInt(Integer::parseInt)
